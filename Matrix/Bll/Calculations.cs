@@ -7,8 +7,7 @@ namespace Matrix.Bll
     {
 		public static int CalculateMatrix(List<int> matrixValueList)
 		{
-			// get the grid size from the square root of the matrixValueList count
-			int gridSize = (int)Math.Sqrt(matrixValueList.Count);
+			int gridSize = GetMatrixSize(matrixValueList);
 
 			// top left -> bottom right
 			int firstDiagonal = 0;
@@ -32,6 +31,17 @@ namespace Matrix.Bll
 			}
 
 			return Math.Abs(firstDiagonal - secondDiagonal);
+		}
+
+		private static int GetMatrixSize(List<int> matrixValueList)
+        {
+			// get the grid size from the square root of the matrixValueList count
+			double matrixSquareRoot = Math.Sqrt(matrixValueList.Count);
+
+			if (matrixSquareRoot % 1 != 0)
+				throw new ArgumentException("Invalid matrix size!");
+
+			return (int)matrixSquareRoot;
 		}
 	}
 }
