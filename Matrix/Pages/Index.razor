@@ -1,0 +1,75 @@
+﻿@page "/"
+Grid size:
+<input type="text" value="@gridSize" @oninput="createGrid">
+<br />
+<hr />
+<br />
+
+@foreach (var x in Enumerable.Range(0, gridSize * gridSize))
+{
+	var xx = x;
+	<input type="number" min="-100" max="100" value="@myList[xx]" @oninput="(e) => onChange(xx, e)">
+	if ((xx + 1) % gridSize == 0)
+	{
+		<br>
+	}
+}
+
+<br />
+<hr />
+<br />
+<b>Answer:</b> @answer
+
+@code
+{
+	private int gridSize = 0, answer = 0;
+	private List<int> myList = new List<int>();
+
+	private void createGrid(ChangeEventArgs e)
+	{
+		if (Int32.TryParse(e.Value.ToString(), out int givenValue))
+		{
+			answer = 0;
+			gridSize = givenValue;
+			myList.Clear();
+			myList.AddRange(Enumerable.Range(0, gridSize * gridSize).Select(_ => 0));
+			StateHasChanged();
+		}
+	}
+
+	private void onChange(int i, ChangeEventArgs e)
+	{
+		if (Int32.TryParse(e.Value.ToString(), out int givenValue))
+		{
+			myList[i] = givenValue;
+			calculate();
+		}
+	}
+
+	private void calculate()
+	{
+		// top left -> bottom right
+		int sum_tl2br = 0;
+		// bottom left -> top right
+		int sum_bl2tr = 0;
+
+		// Loop through myMatrix and grab the corresponding value from MyList
+		for (int x = 0; x < gridSize; x++)
+		{
+			for (int y = 0; y < gridSize; y++)
+			{
+				// Get the value from myList
+				int myValue = myList[x * gridSize + y];
+
+				// if x==y then it's a 'top left -> bottom right' match
+				if (x == y) { sum_tl2br += myValue; }
+
+				// if x + y == matrixSize-1 then it's a 'bottom left -> top right' match
+				if (x + y == gridSize - 1) { sum_bl2tr += myValue; }
+			}
+		}
+
+		answer = Math.Abs(sum_tl2br - sum_bl2tr);
+
+	}
+}
